@@ -1,0 +1,79 @@
+-----------------
+	Utilities
+-----------------
+		- Configure UFT Settings [Done]
+		- GetEnvVar [Done]
+		- SetEnvVar [Done]
+		- SendKeys [Done]
+		- SendKeysSlow [Done]
+		- Write to Registry [Done]
+		- Retrieve from Registry [Done]
+		- Hover Over Object [Done]
+		- Object Builder [Done]
+		- Generate Percentage
+		- String Splitter/Multi Delimiter
+		
+	Microsoft Office
+		- Retrieve text from Word Doc
+		
+	FileSystem
+		- Kill Process
+		- Delete Files
+		- Outlook functions (SendE-Mail, Verify E-Mail/Inbox)
+		- Send Keys
+		- Copy file to location
+		- Move file to location
+		- Verify Files Exist
+		- Rename a file
+		- Create a new file
+		- Create a new folder
+		- Drag & Drop Item
+		- Read Text File
+		- File Path Exists [Done]
+		- File Exists
+	
+	Dates
+		- Last Day of the Month
+		- Date Formatting
+		- Generate TimeStamp
+-----------------
+	Common
+-----------------
+		- Launch application [Done]
+		- WaitFor/Load
+			- Object Exist
+			- Object Enabled
+		- ExistFor
+		- Get Property
+			- Wrapper functions
+		- Comparison Func
+		- String cleaner [In Progress]
+		- Array Functions
+		- Scripting/Global Dictionary
+			- Clear Global Dictionary
+		- Close Browsers (except ALM)
+		- Clear Browser History
+		- State Abrreviations
+		- InputValueInField
+		- Browser functions (Restore, Maximize, Activate, CloseTab)
+-----------------	
+	Web
+-----------------
+		- WebTable functions
+		- Change Link target
+	
+-----------------
+	Excel
+-----------------
+		- Import Excel datasheets
+		- Retrieve Excel Sheet names
+		- Retrieve an Excel value
+		- Set an Excel value
+		- Save Excel Workbook
+		- Close Excel Workbook
+		- Open Excel Workbook
+		- Excel Sheet Column Names
+
+-----------------
+	Database
+-----------------

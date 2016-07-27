@@ -1,0 +1,147 @@
+Option Explicit
+
+
+'**********************************************************************************************************************
+'Function Name:	  		LaunchApplication
+'Author:				John Martin
+'Description:			Launches an application.
+'Example Call:			LaunchApplication("C:\Program Files\Internet Explorer\iexplore.exe", "Internet Explorer")
+'Parameters:
+'	Name:					Description:
+'	Application				The application/application path to be launched.
+'	sApplicationName		The name of the application being launched; used in reporting.
+'________________________________________________________________
+
+Public Function LaunchApplication(Application, sApplicationName)
+	SystemUtil.Run Application
+	Reporter.ReportEvent micDone, "[ "& sApplicationName &" ] Launched", "The [ "& sApplicationName &" ] application launched; reference location of [ "& Application &" ]."
+End Function
+
+'**********************************************************************************************************************
+'Function Name:	  		DateFormat
+'Author:				Orasi Software
+'Description:			Formats a date value.
+'Example Call:			DateFormat("1-20-2015", "MM/dd/yyyy")
+'Parameters:
+'	Name:					Description:
+'	DateInput				The date value to be formatted.
+'	Format                  The format method.
+'________________________________________________________________
+
+Function DateFormat(DateInput, Format)            
+    DateFormat = DotNetFactory.CreateInstance("System.DateTime").Parse(cStr(DateInput)).ToString(Format)
+End Function
+
+'**********************************************************************************************************************
+'Function Name:	  		Prefix0
+'Author:				Orasi Software
+'Description:			Adds the prefix of zero to a number.
+'Example Call:			Prefix0("8")
+'Parameters:
+'	Name:					Description:
+'________________________________________________________________
+
+Public Function Prefix0(sNumber)
+    'Add a prefix of zero.
+    If Len(sNumber) = 1 Then
+        sNumber = "0" & sNumber
+    End If
+    
+    'Pass out the number value.
+    Prefix0 = sNumber
+End Function
+
+'**********************************************************************************************************************
+'Function Name:	  		TimeStampString
+'Author:				Orasi Software
+'Description:			Builds and returns a string time stamp value.
+'Example Call:			TimeStampString()
+'Parameters:
+'	Name:					Description:
+'________________________________________________________________
+
+Public Function TimeStampString()
+    Dim sDay, sHour, sMinute, sMonth, sSecond, sYear
+    
+    'Set the values to build the timestamp value.
+    sYear = Prefix0(Year(Now))
+    sMonth = Prefix0(Month(Now))
+    sDay = Prefix0(Day(Now))
+    sHour = Prefix0(Hour(Now))
+    sMinute = Prefix0(Minute(Now))
+    sSecond = Prefix0(Second(Now))
+    
+    'Pass out the timestamp value.
+    TimeStampString = sYear & sMonth & sDay & sHour & sMinute & sSecond
+End Function
+
+'**********************************************************************************************************************
+'Function Name:	  		HoverOverObject
+'Author:				John Martin
+'Description:			Moves the mouse to hover/focus over a specific object; optional click action.
+'Parameters:
+'	Name:					Description:
+'	Object					The object to be hovered over.
+'	bClick					Optional boolean action to click after hovering.
+'________________________________________________________________
+
+Public Sub HoverOverObject(Object, bClick)
+	Dim oMercObj
+	Dim nXCoordinate
+	Dim nYCoordinate
+	
+	'Retrieve the X and Y coordinates from the object to hover over.
+	nXCoordinate = Object.GetROProperty("abs_x")
+	nYCoordinate = Object.GetROProperty("abs_y")
+	
+	'Create a Mercury object and move the mouse to the specified coordinates.
+	Set oMercObj = CreateObject("Mercury.DeviceReplay")
+	oMercObj.MouseMove nXCoordinate, nYCoordinate
+	
+	'Click the mouse if specified.
+	If bClick Then
+		oMercObj.MouseClick nXCoordinate, nYCoordinate, 1
+	End If
+End Sub
+
+'**********************************************************************************************************************
+'Function Name:	  		AddDaysHoursToCurrentDay
+'Author:				John Martin
+'Description:			Moves the mouse to hover/focus over a specific object; optional click action.
+'Example Call:			AddDaysHoursToCurrentDay("1", "10", "MM-dd-yyyy hh:mm tt")
+'Parameters:
+'	Name:					Description:
+'	nDays					Number of days to add to the current date.
+'	nHours					Number of hours to add to the current date.
+'	sFormat					Date string format for the return value.
+'________________________________________________________________
+
+Public Function AddDaysHoursToCurrentDay(nDays, nHours, sFormat)
+	Dim dNewDate, dSystemDate, dVerifyNewDate
+	Dim nDayDiff
+	
+	'Set the starting date values to today's date.
+	dSystemDate = CDate(DateFormat(Now(), "MM-dd-yyyy"))
+	dNewDate = Now()
+	
+	'Add desired number of Days to current date.
+	If CInt(nDays) > 0 Then
+		dNewDate = DateAdd("d", nDays, dNewDate)
+	End If
+	
+	'Add desired number of Hours to current time/date.
+	If CInt(nHours) > 0 Then
+		dNewDate = DateAdd("h", nHours, dNewDate)
+	End If
+	
+	'Verify the date value was not increased when adding hours (11:00 PM to 12:00 AM scenario).
+	dVerifyNewDate = CDate(DateFormat(dNewDate, "MM-dd-yyyy"))
+	If dVerifyNewDate - dSystemDate > nDays Then
+		nDayDiff = (dVerifyNewDate - dSystemDate) - nDays
+		dNewDate = CDate(dNewDate) - nDayDiff
+	End If
+	
+	'Format and send the date out.
+	AddDaysHoursToCurrentDay = DateFormat(dNewDate, sFormat)
+End Function
+

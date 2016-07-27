@@ -1,0 +1,31 @@
+'**********************************************************************************************************************
+'Function Name:	  		OpenExcelWorkbook
+'Author:				Orasi Software
+'Description:			Opens an Excel workbook at a specified file path and returns the Excel workbook object.
+'Example Call:			OpenExcelWorkbook("C:\Program Files\SecretData.xls")
+'Parameters:
+'	Name:					Description:
+'	sFilePath				The file path for the Excel workbook.
+'________________________________________________________________
+
+Public Function OpenExcelWorkbook(sFilePath)
+	Dim oExcelDoc
+	
+	'Verify the file path exists prior to launching the Excel workbook.
+	If Not FilePathExist(sFilePath) Then
+		Reporter.ReportEvent micFail, "Excel Workbook Not Found", "The Excel Workbook was not found at the following location [ "& sFilePath &" ]; please verify."
+	Else
+		'Create an Excel object.
+		Set oExcelDoc = CreateObject("Excel.Application")
+		
+		'Suppress visibility and alert messages.
+		oExcelDoc.Visible = False
+		oExcelDoc.DisplayAlerts = False
+		
+		'Launch the Excel workbook.
+		oExcelDoc.Workbooks.Open sFilePath
+	End If
+	
+	'Returns the excel object reference.
+	Set OpenExcelWorkbook = oExcelDoc
+End Function

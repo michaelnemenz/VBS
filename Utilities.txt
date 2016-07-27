@@ -1,0 +1,236 @@
+Option Explicit
+
+
+'**********************************************************************************************************************
+'Function Name:	  		ConfigureUFTSettings
+'Author:				Orasi Software
+'Description:			Configures common default UFT settings.
+'Parameters:
+'	Name:					Description:
+'________________________________________________________________
+
+Public Sub ConfigureUFTSettings()
+	Dim oUFT
+	
+	'Create a QuickTest object and launch UFT if not currently launched.
+    Set oUFT = CreateObject("QuickTest.Application")
+	If oUFT.Launched <> True Then 
+		oUFT.Launch 
+	End If 
+	
+	'Set the values for the common UFT settings.
+    oUFT.Options.Run.RunMode = "Fast"
+    oUFT.Options.Run.ViewResults = False
+    oUFT.Options.Run.StepExecutionDelay = 0
+    oUFT.Test.Settings.Run.DisableSmartIdentification = True
+    oUFT.Test.Settings.Run.OnError = "Dialog"
+    oUFT.Test.Settings.Run.ObjectSyncTimeOut = 20 
+End Sub
+
+'**********************************************************************************************************************
+'Function Name:	  		GetEnvironmentVariable
+'Author:				John Martin
+'Description:			Retrieves an environment variable value.
+'Parameters:
+'	Name:					Description:
+'	sVariableName			The name of the environment variable for value retrieval.
+'________________________________________________________________
+
+Public Function GetEnvironmentVariable(sVariableName)
+	Dim oUserVariables, oWScript
+	Dim sEnvValue
+	
+	'Create a Windows Script object and pull the Environment variables.
+	Set oWScript = CreateObject("WScript.Shell")
+	Set oUserVariables = oWScript.Environment("USER")
+	
+	'Verify and retrieve the Environment variable.
+	sEnvValue = oUserVariables(sVariableName)
+	If sEnvValue = "" Then
+		Reporter.ReportEvent micFail, "Environment Variable [ "& sVariableName &" ] Not Found", "The Environment Variable [ "& sVariableName &" ] was not found."
+	Else
+		GetEnvironmentVariable = sEnvValue
+	End If
+End Function
+
+'**********************************************************************************************************************
+'Function Name:	  		SetEnvironmentVariable
+'Author:				John Martin
+'Description:			Sets an environment variable value.
+'Parameters:
+'	Name:					Description:
+'	sVariableName			The name of the environment variable.
+'	sValue					The value to set for the environment variable.
+'________________________________________________________________
+
+Public Sub SetEnvironmentVariable(sVariableName, sValue)
+	Dim oUserVariables, oWScript
+	Dim sSetValue
+	
+	'Create a Windows Script object and pull the Environment variables.
+	Set oWScript = CreateObject("WScript.Shell")
+	Set oUserVariables = oWScript.Environment("USER")
+	
+	'Verify and retrieve the Environment variable to be set.
+	If oUserVariables(sVariableName) = "" Then
+		Reporter.ReportEvent micFail, "Environment Variable Name Parameter Blank", "The Environment Variable name parameter value provided is blank; please provide a valid environment variable name parameter value."
+		Exit Sub
+	Else
+		'Set the Environment variable value.
+		oUserVariables(sVariableName) = sValue
+	End If
+	
+	'Verify the value was successfully set.
+	sSetValue = oUserVariables(sVariableName)
+	If StrComp(sSetValue, sValue, vbTextCompare) = 0 Then
+		Reporter.ReportEvent micDone, "Environment Variable [ "& sVariableName &" ] Set To [ "& sValue &" ]", "The Environment Variable [ "& sVariableName &" ] successfully set to [ "& sValue &" ]."
+	Else
+		Reporter.ReportEvent micFail, "Environment Variable [ "& sVariableName &" ] Not Set", "The Environment Variable [ "& sVariableName &" ] was unable to be successfully set to [ "& sValue &" ]."
+	End If
+End Sub
+
+'**********************************************************************************************************************
+'Function Name:	  		SendKeys
+'Author:				John Martin
+'Description:			Sends keystrokes to an active window.
+'Example Call:     		SendKeys("Message")
+'Parameters:
+'	Name:					Description:
+'	sKeys					The keys to be sent.
+'________________________________________________________________
+
+Public Sub SendKeys(sKeys)
+	Dim oWScript
+	
+	'Create a Windows Script object and send keys.
+	Set oWScript = CreateObject("WScript.Shell")
+	oWScript.SendKeys sKeys
+End Sub
+
+'**********************************************************************************************************************
+'Function Name:	  		SendKeysSlow
+'Author:				John Martin
+'Description:			Sends keystrokes to an active window slowly.
+'Example Call:     		SendKeysSlow("Message")
+'Parameters:
+'	Name:					Description:
+'	sKeys					The keys to be sent.
+'________________________________________________________________
+
+Public Sub SendKeysSlow(sKeys)
+    Dim i
+    Dim nLength
+    Dim oWScript
+    Dim sLetter
+    
+    'Create a Windows Script object and send keys.
+    Set oWScript = CreateObject("WScript.Shell")
+    nLength = Len(sKeys)
+    For i = 1 To nLength
+        sLetter = Mid(sKeys, i, 1)
+        oWScript.SendKeys sLetter
+        Wait(1)
+    Next
+End Sub
+
+'**********************************************************************************************************************
+'Function Name:	  		GetRegistryValue
+'Author:				John Martin
+'Description:			Retrieves a registry value.
+'Parameters:
+'	Name:					Description:
+'	sRegistryKey			The name of the registry key for value retrieval.
+'________________________________________________________________
+
+Public Function GetRegistryValue(sRegistryKey)
+	Dim oWScript
+	Dim sRegValue
+	
+	'Create a Windows Script object and retrieve registry value.
+	Set oWScript = CreateObject("WScript.Shell")
+	sRegValue = oRegistryKey.RegRead(sRegistryKey)
+	
+	'Verify and retrieve the Environment variable.
+	If sRegValue = "" Then
+		Reporter.ReportEvent micFail, "Registry Key [ "& sRegistryKey &" ] Value Not Found", "The Registry Key [ "& sRegistryKey &" ] value was not found."
+	Else
+		GetRegistryValue = sRegValue
+	End If
+End Function
+
+'**********************************************************************************************************************
+'Function Name:	  		SetRegistryValue
+'Author:				John Martin
+'Description:			Sets a registry value.
+'Parameters:
+'	Name:					Description:
+'	sRegistryKey			The name of the registry key to be set.
+'	sRegistryValue			The value to set for the registry key.
+'________________________________________________________________
+
+Public Sub SetRegistryValue(sRegistryKey, sRegistryValue)
+	Dim oWScript
+	Dim sRegValue
+	
+	'Create a Windows Script object and set registry value.
+	Set oWScript = CreateObject("WScript.Shell")
+	oRegistryKey.RegWrite sRegistryKey, sRegistryValue
+	
+	'Verify the value was successfully set.
+	sRegValue = CStr(GetRegistryValue(sRegistryKey))
+	If sRegValue = "" Then
+		Reporter.ReportEvent micFail, "Registry Key [ "& sRegistryKey &" ] Value Not Set", "The Registry Key [ "& sRegistryKey &" ] Value was unable to be successfully set to [ "& sRegistryValue &" ]."
+	Else
+		Reporter.ReportEvent micDone, "Registry Key [ "& sRegistryKey &" ] Value Set To [ "& sRegistryValue &" ]", "The Registry Key [ "& sRegistryKey &" ] successfully set to [ "& sRegistryValue &" ]."
+	End If
+End Sub
+
+'**********************************************************************************************************************
+'Function Name:	  		ObjectBuilder
+'Author:				John Martin
+'Description:			Builds an object using property/value combinations; passes object out for use.
+'Parameters:
+'	Name:					Description:
+'	sProperty1				The name of an object property to be set.
+'	sValue1					The value of an object property to be set.
+'	sProperty2				The name of an object property to be set.
+'	sValue2					The value of an object property to be set.
+'	sProperty3				The name of an object property to be set.
+'	sValue3					The value of an object property to be set.
+'________________________________________________________________
+
+Public Function ObjectBuilder(sProperty1, sValue1, sProperty2, sValue2, sProperty3, sValue3)
+	Dim oBuiltObject
+	
+	'Building the object.
+	Set oBuiltObject = Description.Create
+	oBuiltObject(sProperty1).Value = sValue1
+	oBuiltObject(sProperty2).Value = sValue2
+	oBuiltObject(sProperty3).Value = sValue3
+	
+	'Pass out the built object.
+	Set ObjectBuilder = oBuiltObject
+End Function
+
+'**********************************************************************************************************************
+'Function Name:	  		FilePathExist
+'Author:				John Martin
+'Description:			Checks if a file path exists on the local machine.
+'Parameters:
+'	Name:					Description:
+'	sFilePath				The file path to be verified for existence.
+'________________________________________________________________
+
+Public Function FilePathExist(sFilePath)
+	Dim bFilePathExist
+	Dim oFileSystem
+
+	'Create a File System object.
+	Set oFileSystem = CreateObject("Scripting.FileSystemObject")
+	
+	'Check to see if the file exists in the specified path.
+	bFilePathExist = CBool(oFileSystem.FileExists(sFilePath))
+
+	'Pass out the boolean existence check value.
+	FilePathExist = bFilePathExist
+End Function

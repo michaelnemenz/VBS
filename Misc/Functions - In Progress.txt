@@ -1,0 +1,21 @@
+'**********************************************************************************************************************
+'Function Name:	  		StringClean
+'Author:				John Martin
+'Description:			Cleans a string of any unwanted characters; non-alphanumeric characters by default.
+'Example Call:			StringClean("abc#123", "alphanumeric")
+'Parameters:
+'	Name:					Description:
+'	sString					String to be cleaned of extra characters.
+'	sCleanFormat			Cleaning type/return format of the string: alphanumeric, alpha, or numeric.
+'________________________________________________________________
+Public Function StringClean(sString, sCleanFormat)
+	'Verify string is not empty.
+	'Convert the input to a string.
+	'Loop through each character of the string.
+		'Select Case: [alphanumeric, default, blank], [alpha], [numeric]
+			'Chr range -> alphanumeric
+			'Chr range -> alpha
+			'Chr range -> numeric
+	'Warn for an empty return.
+	'Return the cleaned string value.
+End Function
